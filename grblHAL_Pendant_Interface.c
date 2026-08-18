@@ -14,17 +14,13 @@ const uint8_t keyMap[SX1509_ROWS][SX1509_COLS] = {
   { 12, 13, 14, 15 }
 };
 
-const char* keyFunctions[10][16] = {
-  { "X", "run", "cw", "mist", "Y", "pause", "acw", "water", "Z", "zero", "NULL", "NULL", "W", "stop", "off_s", "off_c" }
-};
-
 uint8_t key_data1, key_data2;
 uint8_t key_pressed = 0; // Flag to indicate if a key event has been triggered
 
 // SX1509 Interrupt Handler
 static void sx1509_interrupt_handler(uint gpio, uint32_t events) {
     // Read the keypad event data from SX1509   
-    //printf("In the interrupt handler \n");
+    
     if (!sx1509_read_keypad(I2C_PORT, SX1509_I2C_ADDR, &key_data1, &key_data2)) {
     printf("SX1509: Failed to read keypad data\n");   
     }
