@@ -21,7 +21,7 @@ uint8_t key_pressed = 0; // Flag to indicate if a key event has been triggered
 static void sx1509_interrupt_handler(uint gpio, uint32_t events) {
     // Read the keypad event data from SX1509   
     
-    if (!sx1509_read_keypad(I2C_PORT, SX1509_I2C_ADDR, &key_data1, &key_data2)) {
+    if (!sx1509_read_keypad(I2C_PORT, SX1509_KEYPAD_I2C_ADDR, &key_data1, &key_data2)) {
     printf("SX1509: Failed to read keypad data\n");   
     }
     else
@@ -41,7 +41,6 @@ int main()
     uint8_t col = 0;
     uint8_t n = 0;
      char keyFunction[10] = {0};
-    uint8_t test =0;
 
     // I2C Initialisation.
     i2c_init(I2C_PORT, I2C_BAUDRATE);
@@ -72,15 +71,32 @@ int main()
     // Set up the LED pin
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-    //sleep_ms(20000);
-    // Initialize SX1509 GPIO Expander / Keypad
-    printf("\nInitializing SX1509 at address 0x%02X...\n", SX1509_I2C_ADDR);
-    if (!sx1509_init_keypad(I2C_PORT, SX1509_I2C_ADDR)) {
+
+    // Initialize SX1509 GPIO Expander / Keypad and LED
+    printf("\nInitializing SX1509's at address 0x%02X and address 0x%02X...\n", SX1509_KEYPAD_I2C_ADDR, SX1509_LED_I2C_ADDR);
+    // Reset device
+    if (!sx1509_reset(I2C_PORT, SX1509_KEYPAD_I2C_ADDR)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+
+    if (!sx1509_reset(I2C_PORT, SX1509_LED_I2C_ADDR)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    
+    sleep_ms(10);  // Wait for reset to complete
+    
+    if (!sx1509_init_keypad(I2C_PORT, SX1509_KEYPAD_I2C_ADDR)) {
         printf("ERROR: Failed to initialize SX1509!\n");
-        test = 1;
     } else {
         printf("SX1509 ready for keypad input (%d rows x %d columns)\n", SX1509_ROWS, SX1509_COLS);
-        test = 2;
+    }
+    
+    if (!sx1509_init_led(I2C_PORT, SX1509_LED_I2C_ADDR)) {
+        printf("ERROR: Failed to initialize SX1509!\n");
+    } else {
+        printf("SX1509 ready for LED driving\n");
     }
 
     // Set up SX1509 interrupt handler on GP2
@@ -122,6 +138,7 @@ int main()
                 case 3:
                     // Handle key press for key 3
                     strcpy(keyFunction, "MIST");
+                    sx1509_write_gpio(I2C_PORT, SX1509_LED_I2C_ADDR, 0x00, 0x00);
                     break;
                 case 4:
                     // Handle key press for key 4
@@ -170,6 +187,7 @@ int main()
                 case 15:
                     // Handle key press for key 15
                     strcpy(keyFunction, "COOLOFF");
+                    sx1509_write_gpio(I2C_PORT, SX1509_LED_I2C_ADDR, 0x10, 0x00);
                     break;
                 default:
                     printf("Key Unmapped\n");

@@ -32,7 +32,8 @@
 // ============================================================================
 // SX1509 GPIO Expander / Keypad Configuration
 // ============================================================================
-#define SX1509_I2C_ADDR     0x3E    // I2C address of SX1509
+#define SX1509_KEYPAD_I2C_ADDR     0x3E    // I2C address of SX1509
+#define SX1509_LED_I2C_ADDR     0x3F    // I2C address of SX1509
 #define SX1509_ROWS         4       // Number of keypad rows
 #define SX1509_COLS         4       // Number of keypad columns
 #define SX1509_INT_PIN      2       // GPIO pin for SX1509 interrupt (active low)

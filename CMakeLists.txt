@@ -42,7 +42,7 @@ pico_set_program_version(grblHAL_Pendant_Interface "0.1")
 
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(grblHAL_Pendant_Interface 0)
+pico_enable_stdio_uart(grblHAL_Pendant_Interface 1)
 pico_enable_stdio_usb(grblHAL_Pendant_Interface 1)
 
 # Add the standard library to the build

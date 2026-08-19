@@ -188,6 +188,8 @@ bool sx1509_read_reg(i2c_inst_t *i2c_port, uint8_t addr, uint8_t reg, uint8_t *v
  */
 bool sx1509_read_keypad(i2c_inst_t *i2c_port, uint8_t addr, uint8_t *key_data1, uint8_t *key_data2);
 
+bool sx1509_init_led(i2c_inst_t *i2c_port, uint8_t addr);
+
 /**
  * Get the current state of GPIO pins (Port A and B)
  * 

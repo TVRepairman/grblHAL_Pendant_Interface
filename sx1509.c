@@ -30,13 +30,6 @@ bool sx1509_reset(i2c_inst_t *i2c_port, uint8_t addr) {
 }
 
 bool sx1509_init_keypad(i2c_inst_t *i2c_port, uint8_t addr) {
-    // Reset device
-    if (!sx1509_reset(i2c_port, addr)) {
-        printf("SX1509: Failed to reset device\n");
-        return false;
-    }
-    
-    sleep_ms(10);  // Wait for reset to complete
 
     // Configure the oscillator (keypad won't work without it):
     if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_CLOCK, 0x40)) {
@@ -112,6 +105,96 @@ bool sx1509_init_keypad(i2c_inst_t *i2c_port, uint8_t addr) {
         printf("SX1509: Failed to configure keypad rows/cols\n");
         return false;
     }
+    
+    printf("SX1509:Initialization successful\n");
+    return true;
+}
+
+bool sx1509_init_led(i2c_inst_t *i2c_port, uint8_t addr) {
+
+    // Disable input buffer (RegInputDisable)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_INPUT_DISABLE_A, 0xFF)) {
+        printf("SX1509: Failed to set input disable A\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_INPUT_DISABLE_B, 0xFF)) {
+        printf("SX1509: Failed to set input disable B\n");
+        return false;
+    }
+    // Disable pull-up (RegPullUp)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_PULL_UP_A, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_PULL_UP_B, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    // Enable open drain (RegOpenDrain)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_OPEN_DRAIN_A, 0xFF)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_OPEN_DRAIN_B, 0xFF)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    // Set direction to output (RegDir) – by default RegData is set high => LED OFF
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_DIR_A, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_DIR_B, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    // Enable oscillator (RegClock)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_CLOCK, 0x40)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    // Configure LED driver clock and mode if relevant (RegMisc)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_MISC, 0xAC)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    //Enable LED driver operation (RegLEDDriverEnable)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_LED_DRIVER_ENABLE_A, 0xFF)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_LED_DRIVER_ENABLE_B, 0xFF)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    // Configure LED driver parameters (RegTOn, RegIOn, RegOff, RegTRise, RegTFall)
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_T_ON_4, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;        
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_I_ON_4, 0xFF)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_OFF_4, 0x00)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }    
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_T_RISE_4, 0x08)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }     
+    if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_T_FALL_4, 0x08)) {
+        printf("SX1509: Failed to reset device\n");
+        return false;
+    }  
+ //   // Set RegData bit low => LED driver started 
+ //   if (!sx1509_write_reg(i2c_port, addr, SX1509_REG_DATA_A, 0x10)) {
+ //       printf("SX1509: Failed to reset device\n");
+ //       return false;
+ //   }  
+    
+
     
     printf("SX1509:Initialization successful\n");
     return true;
